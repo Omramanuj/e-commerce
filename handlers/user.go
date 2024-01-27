@@ -12,7 +12,7 @@ func (h handler) GetAllUsers(c *gin.Context) {
 }
 
 func (h handler) AddUser(c *gin.Context) {
-	var user []models.User
+	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
@@ -49,4 +49,21 @@ func (h handler) UpdateUser(c *gin.Context) {
 		return
 	}
 	c.JSON(201, gin.H{"message": "User updated successfully", "user": user})
+}
+
+func (h handler) DeleteUser(c *gin.Context) {
+    id := c.Param("id")
+
+    var user models.User
+    if err := h.DB.First(&user, id).Error; err != nil {
+        c.JSON(404, gin.H{"error": "User not found"})
+        return
+    }
+    // Delete the user
+    if err := h.DB.Delete(&user).Error; err != nil {
+        c.JSON(500, gin.H{"error": "Failed to delete user"})
+        return
+    }
+
+    c.JSON(200, gin.H{"message": "User deleted successfully"})
 }

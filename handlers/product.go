@@ -39,7 +39,7 @@ func (h handler) CreateProduct(c *gin.Context){
 }
 
 func (h handler) GetProduct(c *gin.Context){
-	var user models.User
+	var user models.Product
 	id := c.Param("id")
 	if err := h.DB.First(&user, id).Error; err != nil {
 		c.JSON(404, gin.H{"error": "User not found"})
@@ -49,7 +49,7 @@ func (h handler) GetProduct(c *gin.Context){
 }
 
 func (h handler) UpdateProduct(c *gin.Context){
-	var user models.User
+	var user models.Product
 	if err:= c.ShouldBindJSON(&user);err!=nil{
 		c.JSON(400,gin.H{"error":err.Error()})
 	}
@@ -58,4 +58,21 @@ func (h handler) UpdateProduct(c *gin.Context){
 		return
 	}
 	c.JSON(200,user)
+}
+
+
+func (h handler) DeleteProduct(c *gin.Context) {
+    id := c.Param("id")
+    var product models.Product
+
+    if err := h.DB.First(&product, id).Error; err != nil {
+        c.JSON(404, gin.H{"error": "Product not found"})
+        return
+    }
+    if err := h.DB.Delete(&product).Error; err != nil {
+        c.JSON(500, gin.H{"error": "Failed to delete product"})
+        return
+    }
+
+    c.JSON(200, gin.H{"message": "Product deleted successfully"})
 }
